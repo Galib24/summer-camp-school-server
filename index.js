@@ -31,13 +31,25 @@ async function run() {
 
         const instructorsCollection = client.db('summerDb').collection('instructors')
         const reviewsCollection = client.db('summerDb').collection('reviews')
+        const enrolledCollection = client.db('summerDb').collection('enrolled')
 
+
+        // instructors function
         app.get('/instructors', async (req, res) => {
             const result = await instructorsCollection.find().toArray();
             res.send(result);
         })
         app.get('/reviews', async (req, res) => {
             const result = await reviewsCollection.find().toArray();
+            res.send(result);
+        })
+
+
+        // enrolled users function
+        app.post('/enrolled', async (req, res) => {
+            const item = req.body;
+            console.log(item);
+            const result = await enrolledCollection.insertOne(item)
             res.send(result);
         })
 
