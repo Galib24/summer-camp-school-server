@@ -29,9 +29,14 @@ async function run() {
         // Connect the client to the server	(optional starting in v4.7)
         // await client.connect();
 
-        const reviewsCollection = client.db('summerDb').collection('instructors')
+        const instructorsCollection = client.db('summerDb').collection('instructors')
+        const reviewsCollection = client.db('summerDb').collection('reviews')
 
         app.get('/instructors', async (req, res) => {
+            const result = await instructorsCollection.find().toArray();
+            res.send(result);
+        })
+        app.get('/reviews', async (req, res) => {
             const result = await reviewsCollection.find().toArray();
             res.send(result);
         })
