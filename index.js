@@ -12,7 +12,7 @@ app.use(express.json());
 // mongodb part
 
 
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.z8yqdyj.mongodb.net/?retryWrites=true&w=majority`;
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
@@ -46,7 +46,9 @@ async function run() {
 
 
         // enrolled users function
-        app.get('/enrolled',  async (req, res) => {
+
+        // get all item
+        app.get('/enrolled', async (req, res) => {
             const email = req.query.email;
 
             if (!email) {
@@ -59,13 +61,21 @@ async function run() {
             res.send(result);
 
         })
-
+        // create to database
         app.post('/enrolled', async (req, res) => {
             const item = req.body;
             // console.log(item);
             const result = await enrolledCollection.insertOne(item)
             res.send(result);
         });
+
+        // delete from data base
+        app.delete('/enrolled/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: new ObjectId(id) };
+            const result = await enrolledCollection.deleteOne(query);
+            res.send(result);
+        })
 
 
 
