@@ -29,9 +29,22 @@ async function run() {
         // Connect the client to the server	(optional starting in v4.7)
         // await client.connect();
 
+        const usersCollection = client.db('summerDb').collection('users')
         const instructorsCollection = client.db('summerDb').collection('instructors')
         const reviewsCollection = client.db('summerDb').collection('reviews')
         const enrolledCollection = client.db('summerDb').collection('enrolled')
+
+
+
+
+        // student related apis
+        app.post('/users', async (req, res) => {
+            const student = req.body;
+            const result = await usersCollection.insertOne(student)
+            res.send(result);
+
+        })
+
 
 
         // instructors function
