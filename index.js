@@ -37,7 +37,16 @@ async function run() {
 
 
 
-        // student related apis
+        // users related apis
+
+        // get user from data base
+        app.get('/users', async (req, res) => {
+            const result = await usersCollection.find().toArray()
+            res.send(result);
+        })
+
+
+        // create user
         app.post('/users', async (req, res) => {
             const user = req.body;
             console.log(user);
@@ -54,6 +63,31 @@ async function run() {
 
         })
 
+        // modify users role admin
+        app.patch('/users/admin/:id', async (req, res) => {
+            const id = req.params.id;
+            const filter = { _id: new ObjectId(id) };
+            const updateDoc = {
+                $set: {
+                    role: 'admin'
+                },
+            };
+            const result = await usersCollection.updateOne(filter, updateDoc);
+            res.send(result);
+        })
+
+        // modify users role instructor
+        app.patch('/users/instructor/:id', async (req, res) => {
+            const id = req.params.id;
+            const filter = { _id: new ObjectId(id) };
+            const updateDoc = {
+                $set: {
+                    role: 'instructor'
+                },
+            };
+            const result = await usersCollection.updateOne(filter, updateDoc);
+            res.send(result);
+        })
 
 
         // instructors function
