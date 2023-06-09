@@ -39,8 +39,17 @@ async function run() {
 
         // student related apis
         app.post('/users', async (req, res) => {
-            const student = req.body;
-            const result = await usersCollection.insertOne(student)
+            const user = req.body;
+            console.log(user);
+
+            // query for find one user which already exist for google login
+            const query = { email: user.email }
+            const existingUser = await usersCollection.findOne(query);
+            console.log('existing user', existingUser);
+            if (existingUser) {
+                return res.send({ message: 'user already exist' })
+            }
+            const result = await usersCollection.insertOne(user)
             res.send(result);
 
         })
