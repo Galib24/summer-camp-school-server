@@ -46,12 +46,26 @@ async function run() {
 
 
         // enrolled users function
+        app.get('/enrolled',  async (req, res) => {
+            const email = req.query.email;
+
+            if (!email) {
+                res.send([])
+            }
+
+            const query = { email: email };
+            const result = await enrolledCollection.find(query).toArray()
+            // console.log(result, query);
+            res.send(result);
+
+        })
+
         app.post('/enrolled', async (req, res) => {
             const item = req.body;
-            console.log(item);
+            // console.log(item);
             const result = await enrolledCollection.insertOne(item)
             res.send(result);
-        })
+        });
 
 
 
