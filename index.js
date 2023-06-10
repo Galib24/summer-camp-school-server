@@ -44,7 +44,7 @@ const client = new MongoClient(uri, {
 async function run() {
     try {
         // Connect the client to the server	(optional starting in v4.7)
-        // await client.connect();
+        await client.connect();
 
         const usersCollection = client.db('summerDb').collection('users')
         const instructorsCollection = client.db('summerDb').collection('instructors')
@@ -59,6 +59,19 @@ async function run() {
         })
 
 
+        const verifyAdmin = async (req, res, next) => {
+            const email = req.decoded.email;
+            const query = { email: email }
+            const user = await usersCollection.findOne(query);
+
+            if (user?.role !== 'admin') {
+                return res.status(403).send({ error: true, message: 'forbidden access' })
+            }
+            next();
+
+        }
+
+
 
         // users related apis
 
@@ -70,7 +83,7 @@ async function run() {
 
 
         // create user
-        app.post('/users', async (req, res) => {
+        app.post('/users', verifyJWT, verifyAdmin,async (req, res) => {
             const user = req.body;
             console.log(user);
 
