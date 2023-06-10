@@ -44,7 +44,7 @@ const client = new MongoClient(uri, {
 async function run() {
     try {
         // Connect the client to the server	(optional starting in v4.7)
-        await client.connect();
+        // await client.connect();
 
         const usersCollection = client.db('summerDb').collection('users')
         const instructorsCollection = client.db('summerDb').collection('instructors')
@@ -83,7 +83,7 @@ async function run() {
 
 
         // create user
-        app.post('/users', verifyJWT, verifyAdmin,async (req, res) => {
+        app.post('/users', verifyJWT, async (req, res) => {
             const user = req.body;
             console.log(user);
 
@@ -126,6 +126,20 @@ async function run() {
         })
 
 
+
+        // get instructor from users
+        app.get('/users/instructor/:email', verifyJWT, async (req, res) => {
+            const email = req.params.email;
+
+            if (req.decoded.email !== email) {
+                res.send({ instructor: false })
+            }
+
+            const query = { email: email }
+            const user = await usersCollection.findOne(query);
+            const result = { instructor: user?.role === 'instructor' }
+            res.send(result);
+        })
         // modify users role instructor
         app.patch('/users/instructor/:id', async (req, res) => {
             const id = req.params.id;
