@@ -119,6 +119,7 @@ async function run() {
 
             if (req.decoded.email !== email) {
                 res.send({ admin: false })
+                return
             }
 
             const query = { email: email }
@@ -126,6 +127,7 @@ async function run() {
             const result = { admin: user?.role === 'admin' }
             // console.log(result);
             res.send(result);
+            
         })
         // modify users role admin
         app.patch('/users/admin/:id', async (req, res) => {
@@ -205,6 +207,7 @@ async function run() {
 
             if (!email) {
                 res.send([])
+                return
             }
 
             const decodedEmail = req.decoded.email;
