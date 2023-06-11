@@ -3,6 +3,7 @@ const app = express();
 const cors = require('cors');
 const jwt = require('jsonwebtoken');
 require('dotenv').config()
+const stripe = require('stripe')(process.env.PAYMENT_SECRET_KEY)
 const port = process.env.PORT || 5000;
 
 // middleware
@@ -51,6 +52,7 @@ async function run() {
         const classItemsCollection = client.db('summerDb').collection('classItems')
         const reviewsCollection = client.db('summerDb').collection('reviews')
         const enrolledCollection = client.db('summerDb').collection('enrolled')
+        const paymentsCollection = client.db('summerDb').collection('payments')
 
 
         app.post('/jwt', (req, res) => {
@@ -75,7 +77,7 @@ async function run() {
 
 
 
-       
+
 
 
 
@@ -89,7 +91,7 @@ async function run() {
             res.send(result);
         })
 
-        
+
         // get user from data base
         app.get('/users', async (req, res) => {
             const result = await usersCollection.find().toArray()
@@ -127,7 +129,7 @@ async function run() {
             const result = { admin: user?.role === 'admin' }
             // console.log(result);
             res.send(result);
-            
+
         })
         // modify users role admin
         app.patch('/users/admin/:id', async (req, res) => {
@@ -237,7 +239,27 @@ async function run() {
             res.send(result);
         })
 
+        // create payment intent and all function here
+        app.post('/create-payment-intent',async (req, res) => {
+            const { price } = req.body;
+            const amount = price * 100;
+            const paymentIntent = await stripe.paymentIntents.create({
+               
+                amount: amount,
+                currency: 'usd',
+                payment_method_types: ['card']
+            });
+            res.send({
+                clientSecret: paymentIntent.client_secret
+            });
+        })
 
+        // payment api
+        app.post('/payments', async(req, res)=>{
+            const payment = req.body;
+            const result = await paymentsCollection.insertOne(payment);
+            res.send(result);
+        })
 
 
         // Send a ping to confirm a successful connection
