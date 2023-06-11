@@ -74,8 +74,22 @@ async function run() {
 
 
 
+
+       
+
+
+
         // users related apis
 
+        // deleted user
+        app.delete('/users/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: new ObjectId(id) };
+            const result = await usersCollection.deleteOne(query);
+            res.send(result);
+        })
+
+        
         // get user from data base
         app.get('/users', async (req, res) => {
             const result = await usersCollection.find().toArray()
