@@ -48,6 +48,7 @@ async function run() {
 
         const usersCollection = client.db('summerDb').collection('users')
         const instructorsCollection = client.db('summerDb').collection('instructors')
+        const classItemsCollection = client.db('summerDb').collection('classItems')
         const reviewsCollection = client.db('summerDb').collection('reviews')
         const enrolledCollection = client.db('summerDb').collection('enrolled')
 
@@ -83,14 +84,14 @@ async function run() {
 
 
         // create user
-        app.post('/users', verifyJWT, async (req, res) => {
+        app.post('/users', async (req, res) => {
             const user = req.body;
             console.log(user);
 
             // query for find one user which already exist for google login
             const query = { email: user.email }
             const existingUser = await usersCollection.findOne(query);
-            console.log('existing user', existingUser);
+            // console.log('existing user', existingUser);
             if (existingUser) {
                 return res.send({ message: 'user already exist' })
             }
@@ -109,7 +110,7 @@ async function run() {
             const query = { email: email }
             const user = await usersCollection.findOne(query);
             const result = { admin: user?.role === 'admin' }
-            console.log(result);
+            // console.log(result);
             res.send(result);
         })
         // modify users role admin
@@ -159,6 +160,23 @@ async function run() {
             const result = await instructorsCollection.find().toArray();
             res.send(result);
         })
+        // instructor item added
+        app.post('/classItems', async (req, res) => {
+            const newItem = req.body;
+            console.log(newItem);
+            const result = await classItemsCollection.insertOne(newItem);
+            res.send(result);
+
+        })
+
+
+        // instructor item get
+        app.get('/classItems', async (req, res) => {
+            const result = await classItemsCollection.find().toArray();
+            res.send(result);
+        })
+
+
         app.get('/reviews', async (req, res) => {
             const result = await reviewsCollection.find().toArray();
             res.send(result);
